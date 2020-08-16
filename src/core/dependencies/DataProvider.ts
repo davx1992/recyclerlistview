@@ -17,7 +17,7 @@ export abstract class BaseDataProvider {
 
     constructor(
         rowHasChanged: (r1: any, r2: any) => boolean,
-        getStableId?: (index: number) => string
+        getStableId?: (index: number) => string,
     ) {
         this.rowHasChanged = rowHasChanged;
         if (getStableId) {
@@ -30,7 +30,7 @@ export abstract class BaseDataProvider {
 
     public abstract newInstance(
         rowHasChanged: (r1: any, r2: any) => boolean,
-        getStableId?: (index: number) => string
+        getStableId?: (index: number) => string,
     ): BaseDataProvider;
 
     public getDataForIndex(index: number): any {
@@ -62,7 +62,7 @@ export abstract class BaseDataProvider {
     public cloneWithRows(
         newData: any[],
         firstModifiedIndex?: number,
-        optimizeForInsertAtBottomAnimation?: boolean
+        optimizeForInsertAtBottomAnimation?: boolean,
     ): DataProvider {
         const dp = this.newInstance(this.rowHasChanged, this.getStableId);
         const newSize = newData.length;
@@ -78,7 +78,7 @@ export abstract class BaseDataProvider {
         } else {
             dp._firstIndexToProcess = Math.max(
                 Math.min(firstModifiedIndex, this._data.length),
-                0
+                0,
             );
         }
         if (dp._firstIndexToProcess !== this._data.length) {
@@ -100,7 +100,7 @@ export abstract class BaseDataProvider {
 export default class DataProvider extends BaseDataProvider {
     public newInstance(
         rowHasChanged: (r1: any, r2: any) => boolean,
-        getStableId?: ((index: number) => string) | undefined
+        getStableId?: ((index: number) => string) | undefined,
     ): BaseDataProvider {
         return new DataProvider(rowHasChanged, getStableId);
     }

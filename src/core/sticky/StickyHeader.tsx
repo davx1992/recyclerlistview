@@ -40,12 +40,12 @@ export default class StickyHeader<
         smallestVisibleIndex: number,
         largestVisibleIndex: number,
         offsetY: number,
-        windowBound?: number
+        windowBound?: number,
     ): void {
         if (stickyIndices && smallestVisibleIndex !== undefined) {
             this.bounceScrolling = this.hasReachedBoundary(
                 offsetY,
-                windowBound
+                windowBound,
             );
             if (
                 smallestVisibleIndex < stickyIndices[0] ||
@@ -58,7 +58,7 @@ export default class StickyHeader<
                     | ValueAndIndex
                     | undefined = BinarySearch.findValueSmallerThanTarget(
                     stickyIndices,
-                    smallestVisibleIndex
+                    smallestVisibleIndex,
                 );
                 if (valueAndIndex) {
                     this.currentIndex = valueAndIndex.index;
@@ -80,14 +80,14 @@ export default class StickyHeader<
 
     protected getScrollY(
         offsetY: number,
-        scrollableHeight: number
+        scrollableHeight: number,
     ): number | undefined {
         return offsetY;
     }
 
     protected hasReachedBoundary(
         offsetY: number,
-        _windowBound?: number
+        _windowBound?: number,
     ): boolean {
         return offsetY <= 0;
     }

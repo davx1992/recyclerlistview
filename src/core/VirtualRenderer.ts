@@ -65,7 +65,7 @@ export default class VirtualRenderer {
         renderStackChanged: (renderStack: RenderStack) => void,
         scrollOnNextUpdate: (point: Point) => void,
         fetchStableId: StableIdProvider,
-        isRecyclingEnabled: boolean
+        isRecyclingEnabled: boolean,
     ) {
         //Keeps track of items that need to be rendered in the next render cycle
         this._renderStack = {};
@@ -101,7 +101,7 @@ export default class VirtualRenderer {
         offsetX: number,
         offsetY: number,
         isActual: boolean,
-        correction: WindowCorrection
+        correction: WindowCorrection,
     ): void {
         if (this._viewabilityTracker) {
             const offset =
@@ -134,7 +134,7 @@ export default class VirtualRenderer {
 
     public setParamsAndDimensions(
         params: RenderStackParams,
-        dim: Dimension
+        dim: Dimension,
     ): void {
         this._params = params;
         this._dimensions = dim;
@@ -163,10 +163,10 @@ export default class VirtualRenderer {
             if (this._layoutManager && this._params) {
                 firstVisibleIndex = Math.min(
                     this._params.itemCount - 1,
-                    firstVisibleIndex
+                    firstVisibleIndex,
                 );
                 const point = this._layoutManager.getOffsetForIndex(
-                    firstVisibleIndex
+                    firstVisibleIndex,
                 );
                 this._scrollOnNextUpdate(point);
                 offset = this._params.isHorizontal ? point.x : point.y;
@@ -199,11 +199,11 @@ export default class VirtualRenderer {
         if (this._params) {
             const initialRenderIndex = Default.value<number>(
                 this._params.initialRenderIndex,
-                0
+                0,
             );
             if (initialRenderIndex > 0 && this._layoutManager) {
                 offset = this._layoutManager.getOffsetForIndex(
-                    initialRenderIndex
+                    initialRenderIndex,
                 );
                 this._params.initialOffset = this._params.isHorizontal
                     ? offset.x
@@ -212,13 +212,13 @@ export default class VirtualRenderer {
                 if (this._params.isHorizontal) {
                     offset.x = Default.value<number>(
                         this._params.initialOffset,
-                        0
+                        0,
                     );
                     offset.y = 0;
                 } else {
                     offset.y = Default.value<number>(
                         this._params.initialOffset,
-                        0
+                        0,
                     );
                     offset.x = 0;
                 }
@@ -233,7 +233,7 @@ export default class VirtualRenderer {
         if (this._params) {
             this._viewabilityTracker = new ViewabilityTracker(
                 Default.value<number>(this._params.renderAheadOffset, 0),
-                Default.value<number>(this._params.initialOffset, 0)
+                Default.value<number>(this._params.initialOffset, 0),
             );
         } else {
             this._viewabilityTracker = new ViewabilityTracker(0, 0);
@@ -251,7 +251,7 @@ export default class VirtualRenderer {
     public syncAndGetKey(
         index: number,
         overrideStableIdProvider?: StableIdProvider,
-        newRenderStack?: RenderStack
+        newRenderStack?: RenderStack,
     ): string {
         const getStableId = overrideStableIdProvider
             ? overrideStableIdProvider
@@ -310,7 +310,7 @@ export default class VirtualRenderer {
     //Further optimize in later revision, pretty fast for now considering this is a low frequency event
     public handleDataSetChange(
         newDataProvider: BaseDataProvider,
-        shouldOptimizeForAnimations?: boolean
+        shouldOptimizeForAnimations?: boolean,
     ): void {
         const getStableId = newDataProvider.getStableId;
         const maxIndex = newDataProvider.getSize() - 1;
@@ -341,7 +341,7 @@ export default class VirtualRenderer {
                     if (stableIdItem) {
                         this._recyclePool.putRecycledObject(
                             stableIdItem.type,
-                            stableIdItem.key
+                            stableIdItem.key,
                         );
                     }
                 }
@@ -366,7 +366,7 @@ export default class VirtualRenderer {
                         const newKey = this.syncAndGetKey(
                             index,
                             getStableId,
-                            newRenderStack
+                            newRenderStack,
                         );
                         const newStackItem = newRenderStack[newKey];
                         if (!newStackItem) {
@@ -377,7 +377,7 @@ export default class VirtualRenderer {
                             this._stableIdToRenderKeyMap[getStableId(index)] = {
                                 key: cllKey,
                                 type: this._layoutProvider.getLayoutTypeForIndex(
-                                    index
+                                    index,
                                 ),
                             };
                         }
@@ -395,11 +395,11 @@ export default class VirtualRenderer {
                     if (
                         !ObjectUtil.isNullOrUndefined(index) &&
                         ObjectUtil.isNullOrUndefined(
-                            this._engagedIndexes[index]
+                            this._engagedIndexes[index],
                         )
                     ) {
                         const type = this._layoutProvider.getLayoutTypeForIndex(
-                            index
+                            index,
                         );
                         this._recyclePool.putRecycledObject(type, key);
                     }
@@ -427,37 +427,37 @@ export default class VirtualRenderer {
                 this._layoutManager.getLayouts(),
                 this._params.isHorizontal
                     ? this._layoutManager.getContentDimension().width
-                    : this._layoutManager.getContentDimension().height
+                    : this._layoutManager.getContentDimension().height,
             );
             this._viewabilityTracker.setDimensions(
                 {
                     height: this._dimensions.height,
                     width: this._dimensions.width,
                 },
-                Default.value<boolean>(this._params.isHorizontal, false)
+                Default.value<boolean>(this._params.isHorizontal, false),
             );
         } else {
             throw new CustomError(
-                RecyclerListViewExceptions.initializationException
+                RecyclerListViewExceptions.initializationException,
             );
         }
     }
 
-    private _onVisibleItemsChanged = (
+    private _onVisibleItemsChanged(
         all: number[],
         now: number[],
-        notNow: number[]
-    ): void => {
+        notNow: number[],
+    ): void {
         if (this.onVisibleItemsChanged) {
             this.onVisibleItemsChanged(all, now, notNow);
         }
-    };
+    }
 
-    private _onEngagedItemsChanged = (
+    private _onEngagedItemsChanged(
         all: number[],
         now: number[],
-        notNow: number[]
-    ): void => {
+        notNow: number[],
+    ): void {
         const count = notNow.length;
         let resolvedKey;
         let disengagedIndex = 0;
@@ -474,9 +474,9 @@ export default class VirtualRenderer {
                     if (!ObjectUtil.isNullOrUndefined(resolvedKey)) {
                         this._recyclePool.putRecycledObject(
                             this._layoutProvider.getLayoutTypeForIndex(
-                                disengagedIndex
+                                disengagedIndex,
                             ),
-                            resolvedKey.key
+                            resolvedKey.key,
                         );
                     }
                 }
@@ -486,7 +486,7 @@ export default class VirtualRenderer {
             //Ask Recycler View to update itself
             this._renderStackChanged(this._renderStack);
         }
-    };
+    }
 
     //Updates render stack and reports whether anything has changed
     private _updateRenderStack(itemIndexes: number[]): boolean {
