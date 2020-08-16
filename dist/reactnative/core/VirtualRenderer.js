@@ -262,6 +262,7 @@ var VirtualRenderer = /** @class */ (function () {
                 delete this._renderStack[key];
             }
         }
+        this._cachedRenderStack = {};
         Object.assign(this._renderStack, newRenderStack);
         if (!shouldOptimizeForAnimations && this._isRecyclingEnabled) {
             for (var key in this._renderStack) {
