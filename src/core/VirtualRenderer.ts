@@ -70,6 +70,7 @@ export default class VirtualRenderer {
         //Keeps track of items that need to be rendered in the next render cycle
         this._renderStack = {};
         this._cachedRenderStack = {};
+
         this._fetchStableId = fetchStableId;
 
         //Keeps track of keys of all the currently rendered indexes, can eventually replace renderStack as well if no new use cases come up
@@ -348,7 +349,6 @@ export default class VirtualRenderer {
                 delete this._stableIdToRenderKeyMap[key];
             }
         }
-
         if (
             shouldOptimizeForAnimations &&
             this._isRecyclingEnabled &&
@@ -357,7 +357,6 @@ export default class VirtualRenderer {
             this._recyclePool.clearAll();
         }
         this._cachedRenderStack = Object.assign({}, this._renderStack);
-
         for (const key in this._renderStack) {
             if (this._renderStack.hasOwnProperty(key)) {
                 const index = this._renderStack[key].dataIndex;
@@ -386,8 +385,8 @@ export default class VirtualRenderer {
                 delete this._renderStack[key];
             }
         }
+        this._cachedRenderStack = {};
         Object.assign(this._renderStack, newRenderStack);
-
         if (!shouldOptimizeForAnimations && this._isRecyclingEnabled) {
             for (const key in this._renderStack) {
                 if (this._renderStack.hasOwnProperty(key)) {
