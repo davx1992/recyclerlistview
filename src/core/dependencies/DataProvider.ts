@@ -15,7 +15,10 @@ export abstract class BaseDataProvider {
     private _hasStableIds = false;
     private _requiresDataChangeHandling = false;
 
-    constructor(rowHasChanged: (r1: any, r2: any) => boolean, getStableId?: (index: number) => string) {
+    constructor(
+        rowHasChanged: (r1: any, r2: any) => boolean,
+        getStableId?: (index: number) => string
+    ) {
         this.rowHasChanged = rowHasChanged;
         if (getStableId) {
             this.getStableId = getStableId;
@@ -25,7 +28,10 @@ export abstract class BaseDataProvider {
         }
     }
 
-    public abstract newInstance(rowHasChanged: (r1: any, r2: any) => boolean, getStableId?: (index: number) => string): BaseDataProvider;
+    public abstract newInstance(
+        rowHasChanged: (r1: any, r2: any) => boolean,
+        getStableId?: (index: number) => string
+    ): BaseDataProvider;
 
     public getDataForIndex(index: number): any {
         return this._data[index];
@@ -53,7 +59,11 @@ export abstract class BaseDataProvider {
 
     //No need to override this one
     //If you already know the first row where rowHasChanged will be false pass it upfront to avoid loop
-    public cloneWithRows(newData: any[], firstModifiedIndex?: number): DataProvider {
+    public cloneWithRows(
+        newData: any[],
+        firstModifiedIndex?: number,
+        optimizeForInsertAtBottomAnimation?: boolean
+    ): DataProvider {
         const dp = this.newInstance(this.rowHasChanged, this.getStableId);
         const newSize = newData.length;
         const iterCount = Math.min(this._size, newSize);
@@ -66,10 +76,20 @@ export abstract class BaseDataProvider {
             }
             dp._firstIndexToProcess = i;
         } else {
-            dp._firstIndexToProcess = Math.max(Math.min(firstModifiedIndex, this._data.length), 0);
+            dp._firstIndexToProcess = Math.max(
+                Math.min(firstModifiedIndex, this._data.length),
+                0
+            );
         }
         if (dp._firstIndexToProcess !== this._data.length) {
             dp._requiresDataChangeHandling = true;
+        } else {
+            if (
+                optimizeForInsertAtBottomAnimation &&
+                this._data.length < newSize
+            ) {
+                dp._requiresDataChangeHandling = true;
+            }
         }
         dp._data = newData;
         dp._size = newSize;
@@ -78,7 +98,10 @@ export abstract class BaseDataProvider {
 }
 
 export default class DataProvider extends BaseDataProvider {
-    public newInstance(rowHasChanged: (r1: any, r2: any) => boolean, getStableId?: ((index: number) => string) | undefined): BaseDataProvider {
+    public newInstance(
+        rowHasChanged: (r1: any, r2: any) => boolean,
+        getStableId?: ((index: number) => string) | undefined
+    ): BaseDataProvider {
         return new DataProvider(rowHasChanged, getStableId);
     }
 }
