@@ -89,6 +89,8 @@ export default class VirtualRenderer {
         this._startKey = 0;
 
         this.onVisibleItemsChanged = null;
+        this._onEngagedItemsChanged = this._onEngagedItemsChanged.bind(this);
+        this._onVisibleItemsChanged = this._onVisibleItemsChanged.bind(this);
     }
 
     public getLayoutDimension(): Dimension {
@@ -349,11 +351,7 @@ export default class VirtualRenderer {
                 delete this._stableIdToRenderKeyMap[key];
             }
         }
-        if (
-            shouldOptimizeForAnimations &&
-            this._isRecyclingEnabled &&
-            this._recyclePool
-        ) {
+        if (shouldOptimizeForAnimations && this._isRecyclingEnabled) {
             this._recyclePool.clearAll();
         }
         this._cachedRenderStack = Object.assign({}, this._renderStack);

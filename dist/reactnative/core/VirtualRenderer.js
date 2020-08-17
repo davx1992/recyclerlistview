@@ -29,6 +29,8 @@ var VirtualRenderer = /** @class */ (function () {
         //Would be surprised if someone exceeds this
         this._startKey = 0;
         this.onVisibleItemsChanged = null;
+        this._onEngagedItemsChanged = this._onEngagedItemsChanged.bind(this);
+        this._onVisibleItemsChanged = this._onVisibleItemsChanged.bind(this);
     }
     VirtualRenderer.prototype.getLayoutDimension = function () {
         if (this._layoutManager) {
@@ -233,9 +235,7 @@ var VirtualRenderer = /** @class */ (function () {
                 delete this._stableIdToRenderKeyMap[key];
             }
         }
-        if (shouldOptimizeForAnimations &&
-            this._isRecyclingEnabled &&
-            this._recyclePool) {
+        if (shouldOptimizeForAnimations && this._isRecyclingEnabled) {
             this._recyclePool.clearAll();
         }
         this._cachedRenderStack = Object.assign({}, this._renderStack);
